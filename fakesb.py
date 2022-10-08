@@ -3,10 +3,7 @@ from struct import error as StructError
 from pagermaid import user_id as self_user_id
 from pagermaid.listener import listener
 from pagermaid.utils import alias_command, lang
-from telethon.errors.rpcerrorlist import (
-    ChatAdminRequiredError,
-    UserAdminInvalidError,
-)
+from telethon.errors.rpcerrorlist import ChatAdminRequiredError, UserAdminInvalidError
 from telethon.tl.functions.channels import DeleteUserHistoryRequest
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import (
@@ -28,10 +25,7 @@ def mention_user(user):
 def mention_group(chat):
     try:
         if chat.username:
-            if chat.username:
-                text = f"[{chat.title}](https://t.me/{chat.username})"
-            else:
-                text = f"`{chat.title}`"
+            text = f"[{chat.title}](https://t.me/{chat.username})"
         else:
             text = f"`{chat.title}`"
     except AttributeError:
@@ -69,22 +63,19 @@ async def fakesb(context):
             return await context.edit(lang("arg_error"))
         target_user = await context.client(GetFullUserRequest(user))
     else:
-        if len(context.parameter) == 1:
-            user = context.parameter[0].strip("`")
-            if user.isnumeric():
-                user = int(user)
-                if user < 0:
-                    return await context.edit(lang("arg_error"))
-        else:
+        if len(context.parameter) != 1:
             return await context.edit(lang("arg_error"))
+        user = context.parameter[0].strip("`")
+        if user.isnumeric():
+            user = int(user)
+            if user < 0:
+                return await context.edit(lang("arg_error"))
         if context.message.entities is not None:
             if isinstance(context.message.entities[0], MessageEntityMentionName):
                 user = context.message.entities[0].user_id
             elif isinstance(context.message.entities[0], MessageEntityPhone):
                 user = int(context.parameter[0])
-            elif isinstance(context.message.entities[0], MessageEntityCode):
-                pass
-            else:
+            elif not isinstance(context.message.entities[0], MessageEntityCode):
                 return await context.edit(f"{lang('error_prefix')}{lang('arg_error')}")
         try:
             user_object = await context.client.get_entity(user)

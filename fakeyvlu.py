@@ -1,21 +1,13 @@
-from asyncio import TimeoutError, sleep
 from io import BytesIO
 from math import floor
 from os import makedirs, remove
 from os.path import exists
 
-from pagermaid import bot, version
+from pagermaid import bot
 from pagermaid.listener import listener
-from pagermaid.utils import alias_command, client
+from pagermaid.utils import alias_command
 from PIL import Image, ImageDraw, ImageFont
 from requests import get
-from telethon.errors import (
-    AuthKeyError,
-    FloodWaitError,
-    ForbiddenError,
-    YouBlockedUserError,
-)
-from telethon.tl.functions.contacts import UnblockRequest
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import (
     MessageMediaPhoto,

@@ -29,9 +29,9 @@ async def baidu(context):
             link = i["url"]
             if "http" not in link:
                 continue
-            title = i["title"][0:30] + "..."
+            title = i["title"][:30] + "..."
             results += f"\n[{title}]({link}) \n"
-        except:
+        except Exception:
             return await context.edit(
                 lang("google_connection_error").replace("google", "baidu")
             )

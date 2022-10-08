@@ -38,17 +38,15 @@ async def vdl(context):
         url = "https" + url.split("https")[1]
 
     reply = await context.get_reply_message()
-    reply_id = None
     await context.edit("视频获取中 . . .")
-    if reply:
-        reply_id = reply.id
+    reply_id = reply.id if reply else None
     if url is None:
         await context.edit("出错了呜呜呜 ~ 无效的参数。")
         return
 
     if url.find("https") == -1:
         if url.find("http") == -1:
-            url = "https://" + url
+            url = f"https://{url}"
         else:
             url = url.replace("http", "https", 1)
 
@@ -132,8 +130,7 @@ async def do_download(context, downloader, reply_id, edit_message=True):
             )
             edit_message and await context.delete()
             return True
-        else:
-            edit_message and await context.edit("视频不见了哎？！")
+        edit_message and await context.edit("视频不见了哎？！")
     return True
 
 
@@ -155,29 +152,18 @@ async def upload(as_file, filename, context, reply_id, caption, duration=0):
         from VideoDLExtra.FastTelethon import upload_file
 
         file = await upload_file(context.client, open(filename, "rb"), filename)
-    except:
+    except Exception:
         file = filename
         await context.client.send_message(
             context.chat_id, "(`FastTelethon`支持文件导入失败，上传速度可能受到影响)"
         )
-    if as_file is True:
-        await context.client.send_file(
-            context.chat_id,
-            file,
-            caption=caption,
-            link_preview=False,
-            force_document=False,
-            attributes=(DocumentAttributeVideo(duration, 0, 0),),
-            reply_to=reply_id,
-        )
-    else:
-        await context.client.send_file(
-            context.chat_id,
-            file,
-            caption=caption,
-            link_preview=False,
-            force_document=False,
-            attributes=(DocumentAttributeVideo(duration, 0, 0),),
-            reply_to=reply_id,
-        )
+    await context.client.send_file(
+        context.chat_id,
+        file,
+        caption=caption,
+        link_preview=False,
+        force_document=False,
+        attributes=(DocumentAttributeVideo(duration, 0, 0),),
+        reply_to=reply_id,
+    )
     remove(filename)

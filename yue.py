@@ -1,5 +1,5 @@
 from pagermaid.listener import listener
-from pagermaid.utils import alias_command, lang, obtain_message
+from pagermaid.utils import alias_command, attach_log, lang, obtain_message
 from requests import post
 
 
@@ -35,7 +35,7 @@ def translate(type, text, t):
 async def yue(context):
     try:
         text = await obtain_message(context)
-    except:
+    except Exception:
         return await context.edit(lang("arg_error"))
     result = translate(0, text, "")
     if len(result) > 4096:
@@ -52,7 +52,7 @@ async def yue(context):
 async def zhtw(context):
     try:
         text = await obtain_message(context)
-    except:
+    except Exception:
         return await context.edit(lang("arg_error"))
     result = translate(1, text, 1)
     if len(result) > 4096:

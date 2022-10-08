@@ -14,7 +14,7 @@ from pagermaid.utils import alias_command, attach_log, lang, obtain_message
 async def encode_url(context):
     try:
         msg = await obtain_message(context)
-    except:
+    except Exception:
         return await context.edit(lang("arg_error"))
 
     result = quote(msg, safe=":/")
@@ -34,7 +34,7 @@ async def encode_url(context):
 async def decode_url(context):
     try:
         msg = await obtain_message(context)
-    except:
+    except Exception:
         return await context.edit(lang("arg_error"))
 
     result = unquote(msg)

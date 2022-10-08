@@ -71,8 +71,7 @@ def translate(target_lang, text):
 )
 async def tr(context):
     reply = await context.get_reply_message()
-    params = context.parameter
-    if params:
+    if params := context.parameter:
         if reply:
             target_lang = params[0].replace(" ", "").upper()
             text = reply.text

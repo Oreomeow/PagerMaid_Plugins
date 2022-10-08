@@ -1,4 +1,5 @@
 """ Module to automate message deletion. """
+import contextlib
 from asyncio import sleep
 from os import path, remove
 from os.path import exists
@@ -51,28 +52,20 @@ async def dme(context):
         await context.edit("注意：没有图片进行替换。")
     try:
         count = int(context.parameter[0]) + 1
-    except ValueError:
-        return await context.edit("出错了呜呜呜 ~ 无效的参数。")
-    except IndexError:
+    except (ValueError, IndexError):
         return await context.edit("出错了呜呜呜 ~ 无效的参数。")
     dme_msg = "别搁这防撤回了。。。"
     if len(context.parameter) == 1:
-        if not redis_status():
-            pass
-        else:
-            try:
+        if redis_status():
+            with contextlib.suppress(Exception):
                 dme_msg = redis.get("dme_msg").decode()
-            except:
-                pass
     elif len(context.parameter) == 2:
         dme_msg = context.parameter[1]
         if not redis_status():
             pass
-        elif not dme_msg == str(count):
-            try:
+        elif dme_msg != str(count):
+            with contextlib.suppress(Exception):
                 redis.set("dme_msg", dme_msg)
-            except:
-                pass
     count_buffer = 0
     try:
         async for message in context.client.iter_messages(
@@ -91,11 +84,9 @@ async def dme(context):
             ):
                 pass
             elif message.text or message.voice:
-                if not message.text == dme_msg:
-                    try:
+                if message.text != dme_msg:
+                    with contextlib.suppress(Exception):
                         await message.edit(dme_msg)
-                    except:
-                        pass
             elif (
                 message.document
                 or message.photo
@@ -104,34 +95,24 @@ async def dme(context):
                 or message.video
                 or message.gif
             ):
-                if target_file:
-                    if not message.text == dme_msg:
-                        try:
+                if message.text != dme_msg:
+                    with contextlib.suppress(Exception):
+                        if target_file:
                             await message.edit(dme_msg, file=target_file)
-                        except:
-                            pass
-                else:
-                    if not message.text == dme_msg:
-                        try:
+                        else:
                             await message.edit(dme_msg)
-                        except:
-                            pass
-            else:
-                pass
             await message.delete()
             count_buffer += 1
     except ValueError:
-        try:
+        with contextlib.suppress(Exception):
             await context.edit("出错了呜呜呜 ~ 无法识别的对话")
-        except:
-            pass
         return
     count -= 1
     count_buffer -= 1
-    await log(f"批量删除了自行发送的 {str(count_buffer)} / {str(count)} 条消息。")
+    await log(f"批量删除了自行发送的 {count_buffer} / {count} 条消息。")
     try:
         notification = await send_prune_notify(context, count_buffer, count)
-    except:
+    except Exception:
         return
     await sleep(0.5)
     await notification.delete()
@@ -139,5 +120,5 @@ async def dme(context):
 
 async def send_prune_notify(context, count_buffer, count):
     return await context.client.send_message(
-        context.chat_id, "删除了 " + str(count_buffer) + " / " + str(count) + " 条消息。"
+        context.chat_id, f"删除了 {str(count_buffer)} / {str(count)} 条消息。"
     )

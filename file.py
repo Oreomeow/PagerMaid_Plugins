@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 from io import BytesIO
 from os import chmod, remove, rename, stat
 from os.path import isdir, isfile
@@ -10,10 +11,8 @@ from pagermaid.utils import alias_command, execute
 
 async def del_msg(context, t_lim):
     await asyncio.sleep(t_lim)
-    try:
+    with contextlib.suppress(Exception):
         await context.delete()
-    except:
-        pass
 
 
 @listener(
@@ -45,10 +44,8 @@ async def file(context):
                         f"This is the directory that will be automatically patched with the filename as the full path.\n此为目录，将被自动补上文件名作为完整路径。\n{params[0]}"
                     )
                 if isfile(params[0]):
-                    try:
+                    with contextlib.suppress(FileNotFoundError):
                         remove(f"{params[0]}.bak")
-                    except FileNotFoundError:
-                        pass
                     rename(params[0], f"{params[0]}.bak")
                     await context.edit(
                         f"This path already has files, so the original files are backed up.\n此路径已存在文件，已将原文件备份至 {params[0]}.bak。"

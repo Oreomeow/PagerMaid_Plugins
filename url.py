@@ -14,28 +14,25 @@ def get_html_text(url):
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39",
         "Content-type": "text/html; charset=utf-8",
     }
-    html_text = requests.get(url, headers=headers).text
-    return html_text
+    return requests.get(url, headers=headers).text
 
 
 def get_cmds():
     html_text = get_html_text("https://wangchujiang.com/linux-command/hot.html")
     soup = BeautifulSoup(html_text, "html.parser")
-    cmds = [
+    return [
         f'> [{x.text}](https://wangchujiang.com/linux-command/{x.a["href"]})'
         for x in soup("li")
     ]
-    return cmds
 
 
 def get_laws():
     html_text = get_html_text("https://lawbook.cf/")
     soup = BeautifulSoup(html_text, "html.parser")
-    laws = [
+    return [
         f'· [{x["href"].split("/")[1].rstrip(".html")}](https://lawbook.cf/{quote(x["href"])})'
         for x in soup("a", {"href": re.compile("^((?!0-README).)*html$")})
     ]
-    return laws
 
 
 def get_regs():
@@ -43,11 +40,10 @@ def get_regs():
         "https://github.com/Oreomeow/Law-Book2/blob/main/src/SUMMARY.md"
     )
     soup = BeautifulSoup(html_text, "html.parser")
-    regs = [
+    return [
         f'* [{x.text}]({x["href"].replace("/Oreomeow/Law-Book2/blob/main/src/","https://oreomeow.github.io/Law-Book2/").replace("md","html")})'
         for x in soup("a", {"href": re.compile("^((?!README).)*md$")})
     ]
-    return regs
 
 
 @listener(

@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import re
 
 from pagermaid.listener import listener
@@ -11,10 +12,8 @@ pip_install("pip_search")
 
 async def del_msg(context, t_lim):
     await asyncio.sleep(t_lim)
-    try:
+    with contextlib.suppress(Exception):
         await context.delete()
-    except:
-        pass
 
 
 @listener(

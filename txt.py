@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 from os import remove
 from os.path import splitext
 
@@ -9,10 +10,8 @@ from pagermaid.utils import alias_command
 
 async def del_msg(context, t_lim):
     await asyncio.sleep(t_lim)
-    try:
+    with contextlib.suppress(Exception):
         await context.delete()
-    except:
-        pass
 
 
 @listener(

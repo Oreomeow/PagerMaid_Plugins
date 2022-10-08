@@ -32,10 +32,10 @@ async def googleplus(context):
     results = ""
     for i in mg.search(query=query, num=int(config["result_length"])):
         try:
-            title = i["text"][0:30] + "..."
+            title = i["text"][:30] + "..."
             link = i["url"]
             results += f"\n[{title}]({link}) \n"
-        except:
+        except Exception:
             return await context.edit(lang("google_connection_error"))
     await context.edit(
         f"**Google** |`{query}`| 🎙 🔍 \n" f"{results}", link_preview=False

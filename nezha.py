@@ -1,5 +1,6 @@
 import asyncio
 
+import contextlib
 from pagermaid import bot
 from pagermaid.listener import listener
 from pagermaid.utils import alias_command, lang, obtain_message
@@ -7,10 +8,8 @@ from pagermaid.utils import alias_command, lang, obtain_message
 
 async def del_msg(context, t_lim):
     await asyncio.sleep(t_lim)
-    try:
+    with contextlib.suppress(Exception):
         await context.delete()
-    except:
-        pass
 
 
 @listener(

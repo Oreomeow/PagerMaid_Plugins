@@ -1,3 +1,4 @@
+import contextlib
 import re
 import subprocess
 import time
@@ -37,12 +38,10 @@ def get_screenshot(url, file_path, fullscreen=False):
     options.add_argument("--start-maximized")
     driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
     driver.get(url)
-    try:
+    with contextlib.suppress(Exception):
         driver.find_element(
             By.XPATH, '//button[@class="Button Modal-closeButton Button--plain"]'
         ).click()
-    except:
-        pass
     if not fullscreen:
         width = "1920"
         height = "1080"

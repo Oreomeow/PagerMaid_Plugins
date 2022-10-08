@@ -21,7 +21,7 @@ async def baike(context):
 
     try:
         results = BaiduSpider().search_baike(message).plain
-    except:
+    except Exception:
         return await context.edit("出错了呜呜呜 ~ 无法访问到百度百科。")
     if results:
         result = results[0]

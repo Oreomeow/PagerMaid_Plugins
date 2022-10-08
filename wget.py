@@ -1,15 +1,14 @@
 import asyncio
 
+import contextlib
 from pagermaid.listener import listener
 from pagermaid.utils import alias_command, attach_log, execute
 
 
 async def del_msg(context, t_lim):
     await asyncio.sleep(t_lim)
-    try:
+    with contextlib.suppress(Exception):
         await context.delete()
-    except:
-        pass
 
 
 @listener(
@@ -34,13 +33,12 @@ async def wget(context):
             return await context.edit(
                 f"[URL]({params[0]}) content download and output to stdout failed.\n下载并输出到命令行失败。"
             )
+        if len(content) > 4096:
+            await attach_log(content, context.chat_id, "content.txt", context.id)
         else:
-            if len(content) > 4096:
-                await attach_log(content, context.chat_id, f"content.txt", context.id)
-            else:
-                await context.edit(content)
+            await context.edit(content)
     else:
         output = await execute(f"wget {' '.join(params)}")
         if len(output) > 4096:
-            return await attach_log(output, context.chat_id, f"output.txt", context.id)
+            return await attach_log(output, context.chat_id, "output.txt", context.id)
         await context.edit(output)
