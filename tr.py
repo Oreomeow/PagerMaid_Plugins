@@ -1,4 +1,4 @@
-from pagermaid.listener import listener
+from pagermaid.listener import config, listener
 from pagermaid.utils import alias_command, attach_log, lang
 from requests import post
 
@@ -47,7 +47,7 @@ def translate(target_lang, text):
             "target_lang": target_lang,
         }
         res = post(
-            url="Place your own DeepL api interface here",
+            url=config["deepl_api"],
             headers=headers,
             json=json,
             timeout=20,
